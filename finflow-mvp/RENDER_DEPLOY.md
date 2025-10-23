@@ -1,284 +1,300 @@
-# Deploy FinFlow to Render.com - Step by Step
+# Deploy FinFlow to Render.com - UPDATED INSTRUCTIONS
 
-Your FinFlow app is ready to deploy! Follow these simple steps to get it live in ~10 minutes.
+## Important: Use Manual Deployment (Not Blueprint)
 
----
-
-## Prerequisites
-
-- ✅ Your code is already on GitHub: `jashtailor/pf_v2`
-- ✅ Branch: `claude/finflow-mvp-setup-011CUPBp9jdNhiediFGqdkxZ`
-- ✅ Render configuration file is ready (`render.yaml`)
+Because your project has subdirectories (`finflow-mvp/backend` and `finflow-mvp/frontend`), you need to deploy each service manually. This is actually very easy!
 
 ---
 
-## Method 1: One-Click Deploy (EASIEST)
-
-### Step 1: Click the Deploy Button
-
-**Once you push this to GitHub, create a Render Blueprint:**
-
-1. Go to: https://render.com
-2. Sign up/Login with GitHub
-3. Click "New +" → "Blueprint"
-4. Connect to your GitHub repo: `jashtailor/pf_v2`
-5. Select branch: `claude/finflow-mvp-setup-011CUPBp9jdNhiediFGqdkxZ`
-6. Render will detect `render.yaml` and set everything up automatically!
-7. Click "Apply" and wait 3-5 minutes
-
-**That's it!** Render will:
-- Deploy your backend
-- Deploy your frontend
-- Connect them automatically
-- Generate secure URLs
-
----
-
-## Method 2: Manual Deploy (More Control)
+## Step-by-Step Deployment
 
 ### Step 1: Sign Up on Render
 
 1. Go to: **https://render.com**
-2. Click "Get Started for Free"
-3. **Sign up with GitHub** (this connects your repos automatically)
-4. Authorize Render to access your GitHub
+2. Click **"Get Started for Free"**
+3. **Sign up with GitHub**
+4. Authorize Render to access your repositories
 
 ---
 
-### Step 2: Deploy Backend (API Server)
+### Step 2: Deploy Backend (5 minutes)
 
 1. **Click "New +" → "Web Service"**
 
 2. **Connect Repository:**
-   - Find: `jashtailor/pf_v2`
-   - Click "Connect"
+   - Find and select: **`jashtailor/pf_v2`**
+   - Click **"Connect"**
 
-3. **Configure Service:**
-   ```
-   Name: finflow-backend
-   Region: Oregon (or closest to you)
-   Branch: claude/finflow-mvp-setup-011CUPBp9jdNhiediFGqdkxZ
-   Root Directory: finflow-mvp/backend
-   Runtime: Node
-   Build Command: npm install
-   Start Command: node server.js
-   ```
+3. **Configure the Service:**
+
+   **Unique Name:** `finflow-backend-YOUR-NAME` (make it unique!)
+
+   **Region:** Oregon (or closest to you)
+
+   **Branch:** `claude/finflow-mvp-setup-011CUPBp9jdNhiediFGqdkxZ`
+
+   **Root Directory:** `finflow-mvp/backend` ⚠️ **IMPORTANT!**
+
+   **Runtime:** Node
+
+   **Build Command:** `npm install`
+
+   **Start Command:** `node server.js`
 
 4. **Select Instance Type:**
-   - Choose: **Free**
+   - **Free** (scroll down to find it)
 
-5. **Add Environment Variables:**
-   Click "Advanced" → "Add Environment Variable":
+5. **Environment Variables:**
+
+   Click **"Advanced"** → **"Add Environment Variable"**
+
+   Add these TWO variables:
 
    ```
+   Variable 1:
    Key: JWT_SECRET
-   Value: your-super-secret-key-make-it-random-and-long
+   Value: finflow-secret-key-change-this-to-something-random-12345
 
+   Variable 2:
    Key: PORT
-   Value: 3001
+   Value: 10000
    ```
 
-   **Important**: Change `JWT_SECRET` to something random and secure!
-   Example: `abc123xyz789secretkey456def`
+   **Note:** Change the JWT_SECRET to something random and secure!
 
 6. **Click "Create Web Service"**
 
-7. **Wait for Deployment** (2-3 minutes)
-   - You'll see logs as it builds
-   - When done, you'll see: "Your service is live 🎉"
+7. **Wait for Deployment** (3-5 minutes)
+   - Watch the logs scroll
+   - You'll see: "✅ Database initialized"
+   - You'll see: "✅ Server running..."
+   - Status will show: **"Live"** with a green dot
 
-8. **Copy Your Backend URL:**
-   - It will look like: `https://finflow-backend-xxxx.onrender.com`
-   - **SAVE THIS URL** - you need it for the frontend!
+8. **SAVE YOUR BACKEND URL:**
+
+   At the top of the page, you'll see a URL like:
+   ```
+   https://finflow-backend-YOUR-NAME.onrender.com
+   ```
+
+   **COPY THIS ENTIRE URL** - you need it for Step 3!
 
 ---
 
-### Step 3: Deploy Frontend (React App)
+### Step 3: Deploy Frontend (5 minutes)
 
 1. **Click "New +" → "Static Site"**
 
 2. **Connect Same Repository:**
-   - Find: `jashtailor/pf_v2`
-   - Click "Connect"
+   - Select: **`jashtailor/pf_v2`**
+   - Click **"Connect"**
 
-3. **Configure Static Site:**
-   ```
-   Name: finflow-frontend
-   Branch: claude/finflow-mvp-setup-011CUPBp9jdNhiediFGqdkxZ
-   Root Directory: finflow-mvp/frontend
-   Build Command: npm install && npm run build
-   Publish Directory: dist
-   ```
+3. **Configure the Static Site:**
 
-4. **Add Environment Variable:**
-   Click "Advanced" → "Add Environment Variable":
+   **Name:** `finflow-YOUR-NAME` (make it unique!)
+
+   **Branch:** `claude/finflow-mvp-setup-011CUPBp9jdNhiediFGqdkxZ`
+
+   **Root Directory:** `finflow-mvp/frontend` ⚠️ **IMPORTANT!**
+
+   **Build Command:** `npm install && npm run build`
+
+   **Publish Directory:** `dist`
+
+4. **Environment Variables:**
+
+   Click **"Advanced"** → **"Add Environment Variable"**
 
    ```
    Key: VITE_API_URL
-   Value: https://finflow-backend-xxxx.onrender.com
+   Value: [PASTE YOUR BACKEND URL FROM STEP 2.8]
    ```
 
-   **Use the backend URL from Step 2.8!**
+   Example: `https://finflow-backend-YOUR-NAME.onrender.com`
+
+   ⚠️ **Do NOT include /api at the end!**
 
 5. **Click "Create Static Site"**
 
-6. **Wait for Build** (2-3 minutes)
+6. **Wait for Build** (3-5 minutes)
+   - Watch build logs
+   - Status will show: **"Live"**
 
 ---
 
 ### Step 4: Access Your Live App! 🎉
 
-Once the frontend finishes deploying, you'll get a URL like:
+Your frontend URL will be:
 ```
-https://finflow-frontend.onrender.com
+https://finflow-YOUR-NAME.onrender.com
 ```
 
-**Click it and your FinFlow app is LIVE!**
+**Click it and test your app:**
 
----
-
-## Testing Your Deployed App
-
-1. **Open the frontend URL** in your browser
-2. You should see the beautiful purple login page
-3. **Click "Sign Up"**
+1. You should see the purple login page ✅
+2. Click "Sign Up"
+3. Enter:
    - Email: `test@example.com`
    - Password: `password123`
    - Name: `Test User`
-4. **Click "Connect Bank"** to add demo transactions
-5. **View Transactions** page to see filtering
+4. Click "Connect Bank"
+5. See demo transactions appear! ✅
 
-**Everything works!** 🚀
-
----
-
-## What Happens Next?
-
-### Auto-Deploy on Every Push
-
-Now that your app is deployed, **every time you push to GitHub, Render automatically redeploys!**
-
-```bash
-# Make some changes
-git add .
-git commit -m "Added new feature"
-git push
-
-# Render detects the push and deploys automatically!
-# No need to do anything else!
-```
-
-You can watch deployments in the Render dashboard.
-
----
-
-## Free Tier Limits
-
-Render Free Tier includes:
-- ✅ 750 hours/month per service (enough for 24/7)
-- ✅ Automatic HTTPS
-- ✅ Custom domains (optional)
-- ✅ Unlimited deploys
-
-**Note**: Free tier services spin down after 15 minutes of inactivity. They wake up automatically when accessed (takes ~30 seconds).
+**Congratulations! Your app is LIVE! 🚀**
 
 ---
 
 ## Troubleshooting
 
-### Backend won't start?
-- Check environment variables are set
-- Look at deployment logs in Render dashboard
-- Make sure `JWT_SECRET` is set
+### Backend Issues
 
-### Frontend can't connect to backend?
-- Verify `VITE_API_URL` environment variable
+**Error: "Can't find package.json"**
+- Make sure Root Directory is EXACTLY: `finflow-mvp/backend`
+- Check there are no extra spaces
+
+**Error: "Database initialization failed"**
+- Check the logs - SQLite should create automatically
+- Restart the service
+
+**Backend not responding:**
+- Check Environment Variables are set (JWT_SECRET and PORT)
+- Look at the logs for errors
+
+### Frontend Issues
+
+**Error: "Can't find package.json"**
+- Make sure Root Directory is EXACTLY: `finflow-mvp/frontend`
+
+**Blank page or "Failed to fetch":**
+- Check VITE_API_URL environment variable
 - Make sure it points to your backend URL
-- Check that backend is running (visit backend URL in browser)
+- Make sure there's NO `/api` at the end
+- Redeploy frontend after fixing
 
-### Build fails?
-- Check build logs in Render dashboard
-- Verify `package.json` has all dependencies
-- Make sure root directory is correct
+**Build fails:**
+- Check build logs for specific errors
+- Make sure `npm install && npm run build` is the build command
+- Make sure `dist` is the publish directory
 
-### Database issues?
-- SQLite works fine on Render free tier
-- Database file persists on the instance
+### Both Services
+
+**"Service unavailable" on first load:**
+- Free tier spins down after 15 min inactivity
+- Wait 30-60 seconds, it will wake up automatically
+- Subsequent loads are fast!
+
+---
+
+## Important Settings Checklist
+
+### Backend Web Service ✅
+- [x] Root Directory: `finflow-mvp/backend`
+- [x] Build Command: `npm install`
+- [x] Start Command: `node server.js`
+- [x] Environment: `JWT_SECRET` set
+- [x] Environment: `PORT` set to `10000`
+- [x] Instance Type: Free
+
+### Frontend Static Site ✅
+- [x] Root Directory: `finflow-mvp/frontend`
+- [x] Build Command: `npm install && npm run build`
+- [x] Publish Directory: `dist`
+- [x] Environment: `VITE_API_URL` set to backend URL
+- [x] Instance Type: Free
+
+---
+
+## After Deployment
+
+### Auto-Deploy is Already Set Up!
+
+Every time you push to GitHub, Render automatically redeploys:
+
+```bash
+# Make changes locally
+git add .
+git commit -m "Added new feature"
+git push
+
+# Render automatically detects and redeploys both services!
+```
+
+### Monitor Your Services
+
+- Go to Render Dashboard
+- Click on each service to see:
+  - Deployment logs
+  - Environment variables
+  - Metrics
+  - Settings
+
+### Update Environment Variables
+
+If you need to change env vars:
+1. Go to service in Render Dashboard
+2. Click "Environment"
+3. Edit the variable
+4. Service will automatically redeploy
+
+---
+
+## What's Next?
+
+Now that your app is live:
+
+✅ Share the URL with friends!
+✅ Add it to your portfolio
+✅ Continue developing - auto-deploys on push
+✅ Connect real SimpleFIN API
+✅ Add more features
+
+---
+
+## Free Tier Limits
+
+- **750 hours/month per service** (enough for 24/7 uptime!)
+- Services sleep after 15 min of inactivity
+- Wake up automatically in ~30 seconds
+- Completely FREE forever
 
 ---
 
 ## Custom Domain (Optional)
 
-Want your own domain like `finflow.yourdomain.com`?
+Want `app.yourdomain.com`?
 
 1. Buy a domain (Namecheap, Google Domains, etc.)
-2. In Render dashboard, go to your service
-3. Settings → Custom Domain
-4. Add your domain
-5. Update DNS records as instructed
-6. Done!
-
----
-
-## Upgrading from Free Tier
-
-Need more performance?
-
-- **Starter**: $7/month - No sleep, more resources
-- **Standard**: $25/month - Auto-scaling, more power
-
-But for an MVP and testing, **free tier is perfect!**
-
----
-
-## Your App URLs
-
-After deployment, save these:
-
-**Frontend (Main App):**
-```
-https://finflow-frontend.onrender.com
-```
-
-**Backend (API):**
-```
-https://finflow-backend.onrender.com
-```
-
----
-
-## Next Steps
-
-Now that your app is live:
-
-1. **Share the URL** with friends, investors, testers!
-2. **Add features** - they'll auto-deploy on push
-3. **Connect real SimpleFIN API** (see SimpleFIN docs)
-4. **Add more pages** (budgets, charts, exports)
-5. **Integrate Splitwise** for shared expenses
+2. In Render: Service → Settings → Custom Domain
+3. Add your domain
+4. Update DNS records as shown
+5. Done!
 
 ---
 
 ## Need Help?
 
 - **Render Docs**: https://render.com/docs
-- **Render Community**: https://community.render.com
-- **My Deployment Guides**:
-  - `DEPLOYMENT.md` - All deployment options
-  - `DEPLOY_WITH_GITHUB.md` - GitHub integration guide
+- **Render Support**: https://render.com/docs/support
+- **Check logs** in Render Dashboard for errors
 
 ---
 
-## Celebrate! 🎉
+## Summary
 
-You just deployed a full-stack personal finance app to the internet!
+You deployed TWO services:
 
-- ✅ Backend API with authentication
-- ✅ React frontend with beautiful UI
-- ✅ Auto-categorized transactions
-- ✅ SQLite database
-- ✅ Automatic deployments
-- ✅ Free hosting
-- ✅ HTTPS secure
+1. **Backend** (Web Service):
+   - URL: `https://finflow-backend-YOUR-NAME.onrender.com`
+   - Handles API, auth, database
 
-**Share your live app URL and show off your work!** 🚀
+2. **Frontend** (Static Site):
+   - URL: `https://finflow-YOUR-NAME.onrender.com`
+   - The app users interact with
+
+Both auto-deploy when you push to GitHub!
+
+---
+
+**Questions? Check the logs first, then review this guide!**
+
+**Enjoy your live FinFlow app! 💰🚀**
