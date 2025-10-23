@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useState, useEffect, createContext, useContext } from 'react';
 
-const API_URL = 'http://localhost:3001/api';
+// Use the current hostname so it works both locally and over network
+const API_URL = `http://${window.location.hostname}:3001/api`;
 
 // ============================================
 // AUTH CONTEXT
