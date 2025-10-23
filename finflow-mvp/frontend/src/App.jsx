@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useState, useEffect, createContext, useContext } from 'react';
 
-// Use the current hostname so it works both locally and over network
-const API_URL = `http://${window.location.hostname}:3001/api`;
+// API URL configuration - supports both development and production
+const API_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : `http://${window.location.hostname}:3001/api`;
 
 // ============================================
 // AUTH CONTEXT

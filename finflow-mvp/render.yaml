@@ -1,0 +1,30 @@
+services:
+  # Backend API Service
+  - type: web
+    name: finflow-backend
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 3001
+    healthCheckPath: /
+
+  # Frontend Static Site
+  - type: web
+    name: finflow-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: finflow-backend
+          envVarKey: RENDER_EXTERNAL_URL
